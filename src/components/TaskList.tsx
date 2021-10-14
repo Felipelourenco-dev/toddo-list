@@ -13,17 +13,39 @@ interface Task {
 export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [error, setError] = useState(false)
 
   function handleCreateNewTask() {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    setError(false)
+   if(newTaskTitle.length > 0){
+    const newTask = {
+      id: Math.random(),
+      title: newTaskTitle,
+      isComplete: false
+    }
+    setTasks(() => [...tasks, newTask]  )
+    setNewTaskTitle('')
+    
+   }else{
+     setError(true)
+   }
+
   }
 
   function handleToggleTaskCompletion(id: number) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const checkedTask = tasks.map(task => task.id === id ? {
+        ...task,
+        isComplete: !task.isComplete
+    } : task)
+    setTasks(checkedTask)
   }
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+    const removeTask = tasks.filter(task => task.id !== id  );
+    setTasks(removeTask)
   }
 
   return (
@@ -32,6 +54,7 @@ export function TaskList() {
         <h2>Minhas tasks</h2>
 
         <div className="input-group">
+          {error ? 'Insira uma nova tarefa' : ''}
           <input 
             type="text" 
             placeholder="Adicionar novo todo" 
